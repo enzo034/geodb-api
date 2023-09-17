@@ -1,4 +1,6 @@
 const input = document.getElementById("place-input");
+const inputMinPopulation = document.getElementById("min-population");
+const inputMaxPopulation = document.getElementById("max-population");
 const placeBtn = document.getElementById("place-btn");
 const table = document.getElementById("table");
 
@@ -10,8 +12,8 @@ const options = {
     }
 };
 
-async function test(place) {
-    const url = `https://wft-geo-db.p.rapidapi.com/v1/geo/places?namePrefix=${place}`;
+async function test(place, min, max) {
+    const url = `https://wft-geo-db.p.rapidapi.com/v1/geo/places?minPopulation=${min}&maxPopulation=${max}&namePrefix=${place}`;
     try {
         const response = await fetch(url, options);
         const result = await response.json();
@@ -39,16 +41,56 @@ function addInfoTable(place) {
         `;
     });
     input.value = "";
+    inputMaxPopulation.value = "";
+    inputMinPopulation.value = "";
+}
+
+function getInputValues() {
+    const inputValue = input.value;
+    const minPopulation = inputMinPopulation.value;
+    const maxPopulation = inputMaxPopulation.value;
+
+    if (inputValue === "") {
+        alert("Write something before proceeding!");
+        return null;
+    }
+
+    const min = minPopulation !== "" ? parseInt(minPopulation) : 0;
+    const max = maxPopulation !== "" ? parseInt(maxPopulation) : 1000000000000000;
+
+    return { inputValue, min, max };
 }
 
 input.addEventListener("keypress", (e) => {
-    
-    if (e.key == 'Enter') {
-        if(input.value == "") alert("Write something before proceed!");
-        else test(input.value);
+    if (e.key === 'Enter') {
+        const inputValues = getInputValues();
+        if (inputValues) {
+            test(inputValues.inputValue, inputValues.min, inputValues.max);
+        }
     }
 });
-placeBtn.addEventListener("click", () => { 
-    if(input.value == "") alert("Write something before proceed!");
-    else test(input.value);
+
+inputMaxPopulation.addEventListener("keypress", (e) => {
+    if (e.key === 'Enter') {
+        const inputValues = getInputValues();
+        if (inputValues) {
+            test(inputValues.inputValue, inputValues.min, inputValues.max);
+        }
+    }
+});
+
+inputMinPopulation.addEventListener("keypress", (e) => {
+    if (e.key === 'Enter') {
+        const inputValues = getInputValues();
+        if (inputValues) {
+            test(inputValues.inputValue, inputValues.min, inputValues.max);
+        }
+    }
+});
+
+placeBtn.addEventListener("click", () => {
+    const inputValues = getInputValues();
+    if (inputValues) {
+        test(inputValues.inputValue, inputValues.min, inputValues.max);
+    }
 });
